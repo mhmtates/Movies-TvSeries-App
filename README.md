@@ -1,6 +1,6 @@
 # Movies-TvSeries-App 
 
-
+Bir React kütüphanesi olan <b>Chakra UI</b> ile <b>TMDB API</b>'yi kullanarak bir dizi film uygulaması geliştiriyorum.(Daha sonra firebase eklenecek)
 
 
 
