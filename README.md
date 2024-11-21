@@ -1,6 +1,6 @@
 # Movies-TvSeries-App 
 
-I have been developing a web application about movies and tvseries using <b>Chakra UI </b> framework of React using <b>TMDB API </b> used to fetch movies and tvseries. I am going to add firebase to the project later.
+I have been developing a web application about movies and tvseries using <b>Chakra UI </b> framework of React using <b>TMDB API </b> used to fetch movies and tvseries data. I am going to add firebase to the project later.
 
 
 # React + Vite
