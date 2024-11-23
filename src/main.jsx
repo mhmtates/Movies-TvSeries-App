@@ -7,6 +7,7 @@ import HomePage from "./pages/HomePage.jsx";
 import TVSeriesPage from "./pages/tvseries/TVSeriesPage.jsx";
 import MoviesPage from "./pages/movies/MoviesPage.jsx";
 import SearchPage from "./pages/search/SearchPage.jsx";
+import DetailsPage from "./pages/DetailsPage.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 
@@ -31,6 +32,10 @@ const router = createBrowserRouter(
         {
           path: "/ara",
           element: <SearchPage />
+        },
+        {
+          path:"/:type/:id",
+          element: <DetailsPage />
         }
       ]
     },

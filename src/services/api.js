@@ -15,3 +15,8 @@ export const fetchTrending = async (timeWindow = "day") => {
   return data?.results;
 };
 
+export const fetchDetails = async(type,id) => {
+  const response =  await axios.get(`${baseUrl}/${type}/${id}?api_key=${apiKey}`);
+  return response?.data;
+};
+

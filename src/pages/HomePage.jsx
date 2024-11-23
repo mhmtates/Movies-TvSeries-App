@@ -1,24 +1,28 @@
-import { useState,useEffect } from "react";
-import { Container, Heading, Grid, Flex, Box } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
+import { Container, Heading, Grid, Flex, Box, Skeleton } from "@chakra-ui/react";
 import Cards from "../components/Cards.jsx";
 import { fetchTrending } from "../services/api.js";
 
 const HomePage = () => {
   const [data, setData] = useState([]);
   const [timeWindow, setTimeWindow] = useState("day");
+  const [loading, setLoading] = useState(true);
 
-  
+
 
   useEffect(() => {
-      fetchTrending(timeWindow)
+    setLoading(true);
+    fetchTrending(timeWindow)
       .then(response => {
         setData(response);
       })
       .catch(error => {
         console.error(error);
-      });
-   }, [timeWindow]) ;
-   console.log(data);
+      }).finally(() => {
+        setLoading(false);
+      })
+  }, [timeWindow]);
+  console.log(data);
 
 
   return (
@@ -28,11 +32,21 @@ const HomePage = () => {
           Trend Olanlar
         </Heading>
         <Flex alignItems={"center"} gap={"2"} border={"1px solid teal"} borderRadius={"20px"}>
-          <Box as="button" px="3" py="1" borderRadius={"20px"} onClick={() => setTimeWindow("day")}>Bugün</Box>
-          <Box as="button" px="3" py="1" borderRadius={"20px"}
-            onClick={() =>  setTimeWindow("week") }>Bu Hafta</Box>
+          <Box as="button"
+            px="3"
+            py="1"
+            borderRadius={"20px"}
+            bg={`${timeWindow === "day" ? "gray.800" : ""}`}
+            onClick={() => setTimeWindow("day")}>Bugün</Box>
+          <Box as="button"
+            px="3"
+            py="1"
+            borderRadius={"20px"}
+            bg={`${timeWindow === "week" ? "gray.800" : ""}`}
+            onClick={() => setTimeWindow("week")}>Bu Hafta</Box>
         </Flex>
       </Flex>
+
       <Grid
         templateColumns={{
           base: "1fr",
@@ -41,10 +55,15 @@ const HomePage = () => {
           lg: "repeat(5, 1fr)",
         }}
         gap={"4"}
-        >
-        {data && data?.map((item) => 
-          <Cards key={item?.id} item={item}  />
+      >
+        {data && data?.map((item, i) =>
+          loading ? (
+            <Skeleton height={300} key={i} />
+          ) : (
+            <Cards key={item?.id} item={item} type={item?.media_type} />
+          )
         )}
+
       </Grid>
 
     </Container>
