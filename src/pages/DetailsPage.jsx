@@ -1,8 +1,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
-import { Box, Button, CircularProgress, CircularProgressLabel, Container, Flex, Heading, Image, Spinner, Text } from "@chakra-ui/react";
-import { fetchDetails, imagePath, imagePathOriginal } from "../services/api";
+import { Badge, Box, Button, CircularProgress, CircularProgressLabel, Container, Flex, Heading, Image, Spinner, Text } from "@chakra-ui/react";
+import { fetchCredits, fetchDetails, imagePath, imagePathOriginal } from "../services/api";
 import { CalendarIcon, CheckCircleIcon, SmallAddIcon } from "@chakra-ui/icons";
 import { ratingToPercentage, resolveRatingColor } from "../utils/helpers";
 
@@ -12,18 +12,42 @@ const DetailsPage = () => {
   const { type, id } = router;
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(true);
+  const [cast, setCast] = useState([]);
+
+  // useEffect(() => {
+  //   fetchDetails(type, id)
+  //     .then((response) => {
+  //       console.log(response, "response")
+  //       setDetails(response)
+  //     }).catch((error) => {
+  //       console.log(error, "error")
+  //     }).finally(() => {
+  //       setLoading(false);
+  //     })
+  // }, [type, id]);
 
   useEffect(() => {
-    fetchDetails(type, id)
-      .then((response) => {
-        console.log(response, "response")
-        setDetails(response)
-      }).catch((error) => {
-        console.log(error, "error")
-      }).finally(() => {
+    const fetchData = async () => {
+      try {
+        const [detailsData, creditsData] = await Promise.all([
+          fetchDetails(type, id),
+          fetchCredits(type, id)
+        ])
+
+        setDetails(detailsData)
+        setCast(creditsData?.cast.slice(0,10))
+      } catch (error) {
+        console.log(error, "error");
+      } finally {
         setLoading(false);
-      })
+      }
+    }
+    fetchData();
   }, [type, id]);
+
+
+
+
 
   if (loading) {
 
@@ -34,7 +58,7 @@ const DetailsPage = () => {
     )
   }
 
-  const title = details?.title || details?.name;
+  const title = details?.original_title || details?.original_name;
   const releaseDate = type === "tv" ? details?.first_air_date : details?.release_date;
 
   return (
@@ -67,7 +91,7 @@ const DetailsPage = () => {
                 <Flex alignItems={"center"}>
                   <CalendarIcon mr={2} color={"gray.400"} />
                   <Text fontSize={"sm"} >
-                    {new Date(releaseDate).toLocaleDateString("tr-TR")} 
+                    {new Date(releaseDate).toLocaleDateString("tr-TR")}
                   </Text>
                 </Flex>
               </Flex>
@@ -89,17 +113,43 @@ const DetailsPage = () => {
                 </Button>
               </Flex>
               <Text color={"gray.400"} fontSize={"sm"} fontStyle={"italic"} my="5">{details?.tagline}
-             </Text>
+              </Text>
               <Heading fontSize={"xl"} mb={"3"}>
                 Özet
               </Heading>
               <Text fontSize={"md"} mb={"3"}>
                 {details?.overview.toString("tr-TR")}
               </Text>
+              <Flex mt="6" gap="2">
+                {details?.genres?.map((genre) => (
+                  <Badge key={genre?.id} p={"1"}>
+                    {genre?.name}
+                  </Badge>
+                ))}
+
+              </Flex>
             </Box>
           </Flex>
         </Container >
-      </Box >
+      </Box>
+      <Container maxW={"container.xl"} pb={"10"}>
+        <Heading as={"h2"} fontSize={"md"} textTransform={"uppercase"} mt={"10"} >
+          Oyuncular 
+        </Heading>
+        <Flex mt="5" mb="10" overflowX={"scroll"} gap={"5"}>
+          {cast?.length === 0 && <Text>No cast found</Text>}
+          {cast && cast?.map((item) =>
+            <Box key={item?.id} minW={"150px"}>
+              <Image src={`${imagePath}/${item?.profile_path}`}/>
+            </Box>
+          )}
+        </Flex>
+
+        {/*Video*/}
+        <Heading>  </Heading>
+
+      </Container>
+
     </Box >
   );
 };

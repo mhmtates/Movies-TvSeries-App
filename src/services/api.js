@@ -17,3 +17,9 @@ export const fetchDetails = async(type,id) => {
   return response?.data;
 };
 
+export const fetchCredits = async(type,id) =>{
+  const response = await axios.get(`${baseUrl}/${type}/${id}/credits?api_key=${apiKey}`);
+
+  return response?.data;
+
+}
