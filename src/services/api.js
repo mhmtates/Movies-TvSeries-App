@@ -29,7 +29,7 @@ export const fetchVideos = async(type,id) => {
   return response?.data;
 }
 
-export const fetchMovies = async () =>{
-  const response = await axios.get(`${baseUrl}/discover/movie?api_key=${apiKey}`);
+export const fetchMovies = async (page,sortBy) =>{
+  const response = await axios.get(`${baseUrl}/discover/movie?api_key=${apiKey}&page=${page}&sort_by=${sortBy}`);
   return response?.data;
 }
