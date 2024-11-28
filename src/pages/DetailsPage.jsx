@@ -156,10 +156,11 @@ const DetailsPage = () => {
           Oyuncular
         </Heading>
         <Flex mt="5" mb="10" overflowX={"scroll"} gap={"5"}>
-          {cast?.length === 0 && <Text>No cast found</Text>}
+          {cast?.length === 0 && <Text>-</Text>}
           {cast && cast?.map((item) =>
             <Box key={item?.id} minW={"150px"}>
-              <Image src={`${imagePath}/${item?.profile_path}`} />
+              <Image src={`${imagePath}/${item?.profile_path}`} 
+              w={"100%"} h={"250px"} objectFit={"cover"} borderRadius={"sm"}/>
             </Box>
           )}
         </Flex>

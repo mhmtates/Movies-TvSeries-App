@@ -4,7 +4,7 @@ import App from "./App.jsx";
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import theme from "../theme.js";
 import HomePage from "./pages/HomePage.jsx";
-import TVSeriesPage from "./pages/tvseries/TVSeriesPage.jsx";
+import TvSeriesPage from "./pages/tvseries/TvSeriesPage.jsx";
 import MoviesPage from "./pages/movies/MoviesPage.jsx";
 import SearchPage from "./pages/search/SearchPage.jsx";
 import DetailsPage from "./pages/DetailsPage.jsx";
@@ -23,7 +23,7 @@ const router = createBrowserRouter(
         },
         {
           path: "/diziler",
-          element: <TVSeriesPage />
+          element: <TvSeriesPage />
         },
         {
           path: "/filmler",
