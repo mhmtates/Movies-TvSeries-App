@@ -38,3 +38,8 @@ export const fetchTvSeries = async (page,sortBy) =>{
   return response?.data;
 }
 
+export const searchData = async (query,page) =>{
+  const response = await axios.get(`${baseUrl}/search/multi?api_key=${apiKey}&query=${query}&page=${page}`);
+  return response?.data;
+
+}
