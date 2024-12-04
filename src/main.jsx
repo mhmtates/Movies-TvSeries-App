@@ -9,6 +9,7 @@ import MoviesPage from "./pages/movies/MoviesPage.jsx";
 import SearchPage from "./pages/search/SearchPage.jsx";
 import DetailsPage from "./pages/DetailsPage.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { AuthProvider } from "./context/authProvider.jsx";
 
 
 const router = createBrowserRouter(
@@ -34,7 +35,7 @@ const router = createBrowserRouter(
           element: <SearchPage />
         },
         {
-          path:"/:type/:id",
+          path: "/:type/:id",
           element: <DetailsPage />
         }
       ]
@@ -50,7 +51,9 @@ createRoot(document.getElementById("root")).render(
   <>
     <ColorModeScript initialColorMode={theme.config.initialColorMode} />
     <ChakraProvider theme={theme}>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </ChakraProvider>
   </>
 )
