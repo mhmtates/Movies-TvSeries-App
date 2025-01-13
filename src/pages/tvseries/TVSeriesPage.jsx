@@ -41,7 +41,7 @@ const TvSeriesPage = () => {
           setSortBy(e.target.value);
         }}>
           <option value="popularity.desc">Popüler</option>
-          <option value="vote_average.desc&vote_count.gte=1000">En Yüksek Oranlı</option>
+          <option value="vote_average.desc&vote_count.gte=1000">En Yüksek Oy Alan</option>
         </Select>
 
       </Flex>

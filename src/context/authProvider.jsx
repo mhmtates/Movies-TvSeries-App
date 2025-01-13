@@ -1,7 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import { auth } from "../services/firebase";
-import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
-import { GoogleAuthProvider } from "firebase/auth/web-extension";
+import { onAuthStateChanged, signInWithPopup, signOut, GoogleAuthProvider } from "firebase/auth";
 import PropTypes from "prop-types";
 
 export const AuthContext = createContext();
@@ -11,11 +10,11 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null)
     const [isLoading, setisLoading] = useState(true)
 
-     function signInWithGoogle() {
-         const provider = new GoogleAuthProvider();
-         return signInWithPopup(auth,provider);
+    function signInWithGoogle() {
+        const provider = new GoogleAuthProvider();
+        return signInWithPopup(auth, provider);
     }
-   
+
     function logout() {
         return signOut(auth);
     }

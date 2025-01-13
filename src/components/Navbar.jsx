@@ -1,6 +1,7 @@
 import { Avatar, Box, Container, Flex, Menu, MenuButton, MenuItem, MenuList } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
+import { SearchIcon } from "@chakra-ui/icons";
 const Navbar = () => {
 
     const { user, signInWithGoogle, logout } = useAuth();
@@ -31,20 +32,21 @@ const Navbar = () => {
                         <Link to="/">Anasayfa</Link>
                         <Link to="/diziler">Diziler</Link>
                         <Link to="/filmler">Filmler</Link>
-                        <Link to="/ara">Ara</Link>
+                        <Link to="/ara">
+                         <SearchIcon fontSize={"xl"}/>
+                        </Link>
                         {user && (
                             <Menu>
                                 <MenuButton>
                                     <Avatar bg={"red.500"} color={"white"} size={"sm"} name={user?.email} />
                                 </MenuButton>
                                 <MenuList>
-                                    <Link to="/">
-                                        <MenuItem>İzlediklerim</MenuItem>
+                                    <Link to="/listem">
+                                        <MenuItem>Listem</MenuItem>
                                     </Link>
                                     <MenuItem onClick={logout}>Çıkış Yap</MenuItem>
                                 </MenuList>
-
-                            </Menu>
+                           </Menu>
                         )}
                         {!user && (
                             <Avatar
