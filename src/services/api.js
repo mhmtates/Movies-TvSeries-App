@@ -3,44 +3,46 @@ import axios from "axios";
 export const imagePath = "https://image.tmdb.org/t/p/w500";
 export const imagePathOriginal = "https://image.tmdb.org/t/p/original";
 
-const baseUrl = "https://api.themoviedb.org/3";
-const apiKey = import.meta.env.VITE_TMDB_API_KEY;
+const api = axios.create({
+  baseURL: "https://api.themoviedb.org/3",
+  params: { api_key: import.meta.env.VITE_TMDB_API_KEY, language: "tr" },
+});
 
 export const fetchTrending = async (timeWindow = "day") => {
-  const { data } = await axios.get(`${baseUrl}/trending/all/${timeWindow}?api_key=${apiKey}`);
-
+  const { data } = await api.get(`/trending/all/${timeWindow}`);
   return data?.results;
 };
 
-export const fetchDetails = async(type,id) => {
-  const response =  await axios.get(`${baseUrl}/${type}/${id}?api_key=${apiKey}&language=tr`);
+
+export const fetchDetails = async (type, id) => {
+  const response = await api.get(`/${type}/${id}`);
   return response?.data;
 };
 
-export const fetchCredits = async(type,id) =>{
-  const response = await axios.get(`${baseUrl}/${type}/${id}/credits?api_key=${apiKey}`);
+export const fetchCredits = async (type, id) => {
+  const response = await api.get(`/${type}/${id}/credits`);
 
   return response?.data;
 
 }
 
-export const fetchVideos = async(type,id) => {
-  const response = await axios.get(`${baseUrl}/${type}/${id}/videos?api_key=${apiKey}`);
+export const fetchVideos = async (type, id) => {
+  const response = await api.get(`/${type}/${id}/videos`);
   return response?.data;
 }
 
-export const fetchMovies = async (page,sortBy) =>{
-  const response = await axios.get(`${baseUrl}/discover/movie?api_key=${apiKey}&page=${page}&sort_by=${sortBy}`);
+export const fetchMovies = async (page, sortBy) => {
+  const response = await api.get(`/discover/movie?page=${page}&sort_by=${sortBy}`);
   return response?.data;
 }
 
-export const fetchTvSeries = async (page,sortBy) =>{
-  const response = await axios.get(`${baseUrl}/discover/tv?api_key=${apiKey}&page=${page}&sort_by=${sortBy}`);
+export const fetchTvSeries = async (page, sortBy) => {
+  const response = await api.get(`/discover/tv?&page=${page}&sort_by=${sortBy}`);
   return response?.data;
 }
 
-export const searchData = async (query,page) =>{
-  const response = await axios.get(`${baseUrl}/search/multi?api_key=${apiKey}&query=${query}&page=${page}`);
+export const searchData = async (query, page) => {
+  const response = await api.get(`/search/multi?query=${query}&page=${page}`);
   return response?.data;
 
 }
