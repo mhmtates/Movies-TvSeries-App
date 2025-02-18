@@ -36,6 +36,16 @@ export const fetchMovies = async (page, sortBy) => {
   return response?.data;
 }
 
+export const fetchMoviesNowPlaying = async (page = 1) => {
+
+  const { data } = await api.get(`/movie/now_playing`, {
+    params: {
+      page,
+    },
+  });
+  return data?.results;
+}
+
 export const fetchTvSeries = async (page, sortBy) => {
   const response = await api.get(`/discover/tv?&page=${page}&sort_by=${sortBy}`);
   return response?.data;
