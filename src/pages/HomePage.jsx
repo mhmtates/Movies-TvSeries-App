@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { Container, Heading, Flex, Box, Skeleton, Button } from "@chakra-ui/react";
 import Cards from "../components/Cards.jsx";
 import { fetchTrending, fetchMoviesNowPlaying } from "../services/api.js";
-import { sliderSettings } from "../utils/helpers.js";
-import Slider from "react-slick";
+import { Splide, SplideSlide } from "@splidejs/react-splide";
 
 const HomePage = () => {
   const [trendingData, setTrendingData] = useState([]);
@@ -12,40 +11,82 @@ const HomePage = () => {
   const [loadingTrending, setLoadingTrending] = useState(true);
   const [loadingNowPlaying, setLoadingNowPlaying] = useState(true);
 
+  // Trend Olanlar API Çağrısı (Dinamik)
   useEffect(() => {
-    setLoadingTrending(true);
-    fetchTrending(timeWindow)
-      .then(response => {
-        setTrendingData(response);
-      })
-      .catch(error => {
-        console.error(error);
-      }).finally(() => {
-        setLoadingTrending(false);
-      });
+    const controller = new AbortController();
+
+    const getTrendingData = async () => {
+      setLoadingTrending(true);
+      try {
+        const response = await fetchTrending(timeWindow);
+        if (!controller.signal.aborted) {
+          setTrendingData(response);
+        }
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          console.error("Trend yapımları alırken hata oluştu:", error);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoadingTrending(false);
+        }
+      }
+    };
+
+    getTrendingData();
+
+    return () => controller.abort();
   }, [timeWindow]);
 
+  // Gösterimde Olan Filmler API Çağrısı (Sadece İlk Render'da)
   useEffect(() => {
-    setLoadingNowPlaying(true);
-    fetchMoviesNowPlaying()
-      .then(response => {
-        setNowPlayingMovies(response);
-      })
-      .catch(error => {
-        console.error(error);
-      }).finally(() => {
-        setLoadingNowPlaying(false);
-      });
+    const controller = new AbortController();
+
+    const getNowPlayingMovies = async () => {
+      setLoadingNowPlaying(true);
+      try {
+        const response = await fetchMoviesNowPlaying();
+        if (!controller.signal.aborted) {
+          setNowPlayingMovies(response);
+        }
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          console.error("Gösterimdeki filmler alınırken hata oluştu:", error);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoadingNowPlaying(false);
+        }
+      }
+    };
+
+    getNowPlayingMovies();
+
+    return () => controller.abort();
   }, []);
 
+  // **Splide Slider Ayarları**
+  const splideOptions = {
+    type: "loop",
+    perPage: 5,
+    perMove: 2,
+    gap: "0px",
+    pagination: false,
+    breakpoints: {
+      1024: { perPage: 4, perMove: 2 },
+      768: { perPage: 2, perMove: 1 },
+      480: { perPage: 1, perMove: 1 },
+    },
+  };
+
   return (
-    <Container maxW={"container.xl"}>
+    <Container maxW="container.xl">
       {/* Trend Olanlar */}
-      <Flex alignItems={"baseline"} gap={"4"} my={"10"}>
-        <Heading as={"h2"} fontSize={"md"} textTransform={"uppercase"}>
+      <Flex alignItems="baseline" gap="4" my="10">
+        <Heading as="h2" fontSize="md" textTransform="uppercase">
           Trend Olanlar
         </Heading>
-        <Flex alignItems={"center"} gap={"2"} border={"1px solid teal"} borderRadius={"20px"}>
+        <Flex alignItems="center" gap="2" border="1px solid teal" borderRadius="20px">
           <Button
             size="sm"
             variant={timeWindow === "day" ? "solid" : "outline"}
@@ -72,18 +113,18 @@ const HomePage = () => {
           ))}
         </Flex>
       ) : (
-        <Slider {...sliderSettings}>
+        <Splide options={splideOptions}>
           {trendingData?.map((trend) => (
-            <Box key={trend?.id} p="2">
+            <SplideSlide key={trend?.id}>
               <Cards item={trend} type={trend?.media_type} />
-            </Box>
+            </SplideSlide>
           ))}
-        </Slider>
+        </Splide>
       )}
 
       {/* Gösterimde Olan Filmler */}
-      <Heading as={"h2"} fontSize={"md"} textTransform={"uppercase"} my={10}>
-        Gösterimde Olan Filmler
+      <Heading as="h2" fontSize="md" textTransform="uppercase" my={10}>
+        Gösterimdeki Filmler
       </Heading>
 
       {loadingNowPlaying ? (
@@ -93,13 +134,13 @@ const HomePage = () => {
           ))}
         </Flex>
       ) : (
-        <Slider {...sliderSettings}>
+        <Splide options={splideOptions}>
           {nowPlayingMovies?.map((movie) => (
-            <Box key={movie?.id} p="2">
+            <SplideSlide key={movie?.id}>
               <Cards item={movie} type="movie" />
-            </Box>
+            </SplideSlide>
           ))}
-        </Slider>
+        </Splide>
       )}
     </Container>
   );
