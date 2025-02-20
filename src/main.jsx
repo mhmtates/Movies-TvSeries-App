@@ -1,7 +1,6 @@
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import "slick-carousel/slick/slick.css"; 
-import "slick-carousel/slick/slick-theme.css";
+import "@splidejs/react-splide/css"; 
 import App from "./App.jsx";
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import theme from "../theme.js";
