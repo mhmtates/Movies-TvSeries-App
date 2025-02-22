@@ -1,69 +1,58 @@
 import { useState, useEffect } from "react";
 import { Container, Heading, Flex, Box, Skeleton, Button } from "@chakra-ui/react";
 import Cards from "../components/Cards.jsx";
-import { fetchTrending, fetchMoviesNowPlaying } from "../services/api.js";
+import { fetchTrending, fetchMoviesNowPlaying, fetchPopularMovies, fetchTopRatedMovies, fetchUpComingMovies, fetchAiringTodayTvSeries, fetchPopularTvSeries, fetchTopRatedTvSeries } from "../services/api.js";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
+import Hero from "../components/Hero.jsx";
 
 const HomePage = () => {
-  const [trendingData, setTrendingData] = useState([]);
+  const [trendingProductions, setTrendingProductions] = useState([]);
   const [nowPlayingMovies, setNowPlayingMovies] = useState([]);
+  const [popularMovies, setPopularMovies] = useState([]);
+  const [topRatedMovies, setTopRatedMovies] = useState([]);
+  const [upcomingMovies, setUpComingMovies] = useState([]);
+  const [airingTodayTvSeries, setAiringTodayTvSeries] = useState([]);
+  const [popularTvSeries, setPopularTvSeries] = useState([]);
+  const [topRatedTvSeries, setTopRatedTvSeries] = useState([]);
   const [timeWindow, setTimeWindow] = useState("day");
-  const [loadingTrending, setLoadingTrending] = useState(true);
-  const [loadingNowPlaying, setLoadingNowPlaying] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-  // Trend Olanlar API Çağrısı (Dinamik)
+
   useEffect(() => {
-    const controller = new AbortController();
+    const fetchData = async () => {
 
-    const getTrendingData = async () => {
-      setLoadingTrending(true);
-      try {
-        const response = await fetchTrending(timeWindow);
-        if (!controller.signal.aborted) {
-          setTrendingData(response);
-        }
-      } catch (error) {
-        if (!controller.signal.aborted) {
-          console.error("Trend yapımları alırken hata oluştu:", error);
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setLoadingTrending(false);
-        }
-      }
+      setLoading(true);
+
+      const [trending, nowPlaying, popularMovie, topMovie, upcoming, airingToday, onTheAir, popularTv, topTv] = await Promise.all([
+        fetchTrending(timeWindow),
+        fetchMoviesNowPlaying(),
+        fetchPopularMovies(),
+        fetchTopRatedMovies(),
+        fetchUpComingMovies(),
+        fetchAiringTodayTvSeries(),
+        fetchPopularTvSeries(),
+        fetchTopRatedTvSeries(),
+      ]);
+
+      setTrendingProductions(trending);
+      setNowPlayingMovies(nowPlaying);
+      setPopularMovies(popularMovie);
+      setTopRatedMovies(topMovie);
+      setUpComingMovies(upcoming);
+      setAiringTodayTvSeries(airingToday);
+      setPopularTvSeries(popularTv);
+      setTopRatedTvSeries(topTv);
+
+
+      setLoading(false);
+
     };
 
-    getTrendingData();
+    fetchData();
 
-    return () => controller.abort();
   }, [timeWindow]);
 
-  // Gösterimde Olan Filmler API Çağrısı (Sadece İlk Render'da)
-  useEffect(() => {
-    const controller = new AbortController();
 
-    const getNowPlayingMovies = async () => {
-      setLoadingNowPlaying(true);
-      try {
-        const response = await fetchMoviesNowPlaying();
-        if (!controller.signal.aborted) {
-          setNowPlayingMovies(response);
-        }
-      } catch (error) {
-        if (!controller.signal.aborted) {
-          console.error("Gösterimdeki filmler alınırken hata oluştu:", error);
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setLoadingNowPlaying(false);
-        }
-      }
-    };
-
-    getNowPlayingMovies();
-
-    return () => controller.abort();
-  }, []);
 
   // **Splide Slider Ayarları**
   const splideOptions = {
@@ -79,69 +68,122 @@ const HomePage = () => {
     },
   };
 
+
+
+
+
+
+
   return (
     <Container maxW="container.xl">
-      {/* Trend Olanlar */}
-      <Flex alignItems="baseline" gap="4" my="10">
-        <Heading as="h2" fontSize="md" textTransform="uppercase">
-          Trend Olanlar
-        </Heading>
-        <Flex alignItems="center" gap="2" border="1px solid teal" borderRadius="20px">
-          <Button
-            size="sm"
-            variant={timeWindow === "day" ? "solid" : "outline"}
-            colorScheme="teal"
-            onClick={() => setTimeWindow("day")}
-          >
-            Bugün
-          </Button>
-          <Button
-            size="sm"
-            variant={timeWindow === "week" ? "solid" : "outline"}
-            colorScheme="teal"
-            onClick={() => setTimeWindow("week")}
-          >
-            Bu Hafta
-          </Button>
-        </Flex>
-      </Flex>
 
-      {loadingTrending ? (
-        <Flex gap="4">
-          {[...Array(5)].map((_, i) => (
-            <Skeleton height="300px" width="200px" key={i} />
-          ))}
-        </Flex>
-      ) : (
-        <Splide options={splideOptions}>
-          {trendingData?.map((trend) => (
-            <SplideSlide key={trend?.id}>
-              <Cards item={trend} type={trend?.media_type} />
-            </SplideSlide>
-          ))}
-        </Splide>
-      )}
+      <Hero />
 
-      {/* Gösterimde Olan Filmler */}
+      <Heading as="h2" fontSize="md" textTransform="uppercase" my={10}>
+        Trend Yapımlar
+      </Heading>
+      <Splide options={splideOptions}>
+        {trendingProductions?.map((trend) => (
+          <SplideSlide key={trend?.id}>
+            <Cards item={trend} type={trend?.media_type} />
+          </SplideSlide>
+        ))}
+      </Splide>
+
+
       <Heading as="h2" fontSize="md" textTransform="uppercase" my={10}>
         Gösterimdeki Filmler
       </Heading>
+      <Splide options={splideOptions}>
+        {nowPlayingMovies?.map((movie) => (
+          <SplideSlide key={movie?.id}>
+            <Cards item={movie} type="movie" />
+          </SplideSlide>
+        ))}
+      </Splide>
 
-      {loadingNowPlaying ? (
-        <Flex gap="4">
-          {[...Array(5)].map((_, i) => (
-            <Skeleton height="300px" width="200px" key={i} />
-          ))}
-        </Flex>
-      ) : (
-        <Splide options={splideOptions}>
-          {nowPlayingMovies?.map((movie) => (
-            <SplideSlide key={movie?.id}>
-              <Cards item={movie} type="movie" />
-            </SplideSlide>
-          ))}
-        </Splide>
-      )}
+
+
+      <Heading as="h2" fontSize="md" textTransform="uppercase" my={10}>
+        Popüler Filmler
+      </Heading>
+      <Splide options={splideOptions}>
+        {popularMovies?.map((movie) => (
+          <SplideSlide key={movie?.id}>
+            <Cards item={movie} type="movie" />
+          </SplideSlide>
+        ))}
+      </Splide>
+
+      <Heading as="h2" fontSize="md" textTransform="uppercase" my={10}>
+        En Yüksek Puanlı Filmler
+      </Heading>
+      <Splide options={splideOptions}>
+        {topRatedMovies?.map((movie) => (
+          <SplideSlide key={movie?.id}>
+            <Cards item={movie} type="movie" />
+          </SplideSlide>
+        ))}
+      </Splide>
+
+      <Heading as="h2" fontSize="md" textTransform="uppercase" my={10}>
+        Yakındaki Filmler
+      </Heading>
+      <Splide options={splideOptions}>
+        {upcomingMovies?.map((movie) => (
+          <SplideSlide key={movie?.id}>
+            <Cards item={movie} type="movie" />
+          </SplideSlide>
+        ))}
+      </Splide>
+
+      <Heading as="h2" fontSize="md" textTransform="uppercase" my={10}>
+        Yakındaki Filmler
+      </Heading>
+      <Splide options={splideOptions}>
+        {upcomingMovies?.map((movie) => (
+          <SplideSlide key={movie?.id}>
+            <Cards item={movie} type="movie" />
+          </SplideSlide>
+        ))}
+      </Splide>
+
+      <Heading as="h2" fontSize="md" textTransform="uppercase" my={10}>
+        Yayındaki Diziler
+      </Heading>
+      <Splide options={splideOptions}>
+        {airingTodayTvSeries?.map((tv) => (
+          <SplideSlide key={tv?.id}>
+            <Cards item={tv} type="tv" />
+          </SplideSlide>
+        ))}
+      </Splide>
+
+      <Heading as="h2" fontSize="md" textTransform="uppercase" my={10}>
+         Popüler Diziler
+      </Heading>
+      <Splide options={splideOptions}>
+        {popularTvSeries?.map((tv) => (
+          <SplideSlide key={tv?.id}>
+            <Cards item={tv} type="tv" />
+          </SplideSlide>
+        ))}
+      </Splide>
+
+      {/* <Heading as="h2" fontSize="md" textTransform="uppercase" my={10}>
+         En Yüksek Puanlı Diziler
+      </Heading>
+      <Splide options={splideOptions}>
+        {topRatedTvSeries?.map((tv) => (
+          <SplideSlide key={tv?.id}>
+            <Cards item={tv} type="tv" />
+          </SplideSlide>
+        ))}
+      </Splide> */} 
+
+      
+
+
     </Container>
   );
 };

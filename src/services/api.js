@@ -46,10 +46,80 @@ export const fetchMoviesNowPlaying = async (page = 1) => {
   return data?.results;
 }
 
+export const fetchPopularMovies = async (page = 1) => {
+
+  const { data } = await api.get(`/movie/popular`, {
+    params: {
+      page,
+    },
+  });
+  return data?.results;
+
+}
+
+export const fetchTopRatedMovies = async (page = 1) => {
+
+  const { data } = await api.get(`/movie/top_rated`, {
+    params: {
+      page,
+    },
+  });
+  return data?.results;
+
+}
+
+export const fetchUpComingMovies = async (page = 1) => {
+
+  const { data } = await api.get(`/movie/upcoming`, {
+    params: {
+      page,
+    },
+  });
+  return data?.results;
+
+}
+
+
 export const fetchTvSeries = async (page, sortBy) => {
   const response = await api.get(`/discover/tv?&page=${page}&sort_by=${sortBy}`);
   return response?.data;
 }
+
+export const fetchAiringTodayTvSeries = async (page = 1) => {
+
+  const { data } = await api.get(`/tv/airing_today`, {
+    params: {
+      page,
+    },
+  });
+  return data?.results;
+
+}
+
+
+
+export const fetchPopularTvSeries = async (page = 1) => {
+
+  const { data } = await api.get(`/tv/popular`, {
+    params: {
+      page,
+    },
+  });
+  return data?.results;
+
+}
+
+export const fetchTopRatedTvSeries = async (page = 1) => {
+
+  const { data } = await api.get(`/tv/top_rated`, {
+    params: {
+      page,
+    },
+  });
+  return data?.results;
+
+}
+
 
 export const searchData = async (query, page) => {
   const response = await api.get(`/search/multi?query=${query}&page=${page}`);
